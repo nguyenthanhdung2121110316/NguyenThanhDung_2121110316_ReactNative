@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CartContext } from './CartContext';
 
 const CartScreen = () => {
+  const { updateCartItemCount } = useContext(CartContext);
+
   const [cartItems, setCartItems] = useState([]);
-  const [cartItemsCount, setCartItemsCount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
@@ -21,15 +23,14 @@ const CartScreen = () => {
       if (cartItemsData) {
         const parsedCartItems = JSON.parse(cartItemsData);
         setCartItems(parsedCartItems);
-        const cartItemsCount = parsedCartItems.reduce((total, item) => total + item.quantity, 0);
-        setCartItemsCount(cartItemsCount);
+        updateCartItemCount(getCartItemCount(parsedCartItems));
       }
     } catch (error) {
       console.log('Error fetching cart items:', error);
     }
   };
 
-  const removeItemFromCart = async (itemId) => {
+  const handleRemoveItem = async (itemId) => {
     try {
       const updatedCartItems = cartItems.map(item => {
         if (item.id === itemId) {
@@ -43,6 +44,9 @@ const CartScreen = () => {
 
       setCartItems(updatedCartItems);
       await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+
+      updateCartItemCount(getCartItemCount(updatedCartItems));
+
     } catch (error) {
       console.log('Error removing item from cart:', error);
     }
@@ -51,6 +55,10 @@ const CartScreen = () => {
   const calculateTotalPrice = () => {
     const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
     setTotalPrice(totalPrice);
+  };
+
+  const getCartItemCount = (cartItems) => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
   const handleCheckout = () => {
@@ -71,7 +79,7 @@ const CartScreen = () => {
                 <Text style={styles.cartItemTitle}>{item.title} ({item.quantity})</Text>
                 <Text style={styles.cartItemPrice}>Price: ${item.price.toFixed(2)}</Text>
               </View>
-              <TouchableOpacity onPress={() => removeItemFromCart(item.id)}>
+              <TouchableOpacity onPress={() => handleRemoveItem(item.id)}>
                 <Text style={styles.removeItemButton}>Remove</Text>
               </TouchableOpacity>
             </View>
