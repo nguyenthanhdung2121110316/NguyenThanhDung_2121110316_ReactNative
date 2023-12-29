@@ -9,7 +9,7 @@ export default function Footer() {
         <FontAwesome name="home" size={24} color="red" />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => console.log('Settings icon clicked')} style={styles.footerButton}>
-        <FontAwesome name="phone" size={24} color="black" />
+        <FontAwesome name="user" size={24} color="black" />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => console.log('Home icon clicked')} style={styles.footerButton}>
         <FontAwesome name="plane" size={24} color="black" />

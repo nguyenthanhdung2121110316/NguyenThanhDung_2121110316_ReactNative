@@ -30,7 +30,10 @@ export default function Header() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor='red' />
-
+      <View style={styles.logoContainer}>
+        <Image style={styles.logo} source={require('../images/logo2.jpg')} />
+        <Text style={styles.textTitle}>CocaRed</Text>
+      </View>
       <View style={styles.titleContainer}>
         <View style={styles.searchContainer}>
           <Search />
@@ -43,10 +46,7 @@ export default function Header() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.logoContainer}>
-        <Image style={styles.logo} source={require('../images/logo2.jpg')} />
-        <Text style={styles.textTitle}>CocaRed</Text>
-      </View>
+      
     </SafeAreaView>
   );
 }
@@ -54,12 +54,14 @@ export default function Header() {
 const styles = StyleSheet.create({
   container: {
     marginTop: 10,
-    paddingTop: 40,
+    paddingTop: 7,
   },
   titleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingTop: 10,
+    paddingBottom:15,
   },
   searchContainer: {
     flex: 1,
@@ -84,9 +86,9 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 10,
+    paddingTop: 2,
   },
   logo: {
     width: 100,

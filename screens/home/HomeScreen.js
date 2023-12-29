@@ -4,18 +4,20 @@ import ListCategory from './ListCategory';
 import ListProduct from './ListProduct';
 import Search from './Search';
 import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 export default function HomeScreen() {
     return (
         <>
-        
+        <Header></Header>
             <ScrollView>
                 <View>
-                <Header></Header>
+                
                     <ListCategory></ListCategory>
                     <ListProduct></ListProduct>
                 </View>
             </ScrollView>
+            <Footer></Footer>
         </>
 
     );
