@@ -1,20 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './screens/home/HomeScreen';
+import SingleProductScreen from './screens/home/SingleProductScreen';
+import Header from './components/Header';
+import CartScreen from './screens/home/CartScreen';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={{ flex: 1, paddingHorizontal: 15 }}>
+
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="HomeScreen">
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{ headerTitle: 'Trang chủ' }} // Thay đổi tiêu đề hiển thị
+          />
+          <Stack.Screen name="SingleProduct" component={SingleProductScreen} options={{ headerTitle: 'Chi tiết sản phẩm' }} />
+          <Stack.Screen
+            name="CartScreen"
+            component={CartScreen}
+            options={{ headerTitle: 'Giỏ hàng' }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     </View>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+};
