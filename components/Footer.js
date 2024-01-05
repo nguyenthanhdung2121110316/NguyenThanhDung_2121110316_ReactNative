@@ -1,19 +1,38 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function Footer() {
+  const navigation = useNavigation();
+  const route = useRoute();
+
+  useEffect(() => {
+    if (route.name !== 'HomeScreen') {
+      navigation.navigate('HomeScreen');
+    }
+  }, []);
+
+  const handleHomePress = () => {
+    navigation.navigate('HomeScreen');
+  };
+
+  const handleProfilePress = () => {
+    navigation.navigate('ProfileScreen');
+  };
+
   return (
     <View style={styles.footerContainer}>
-      <TouchableOpacity onPress={() => console.log('Home icon clicked')} style={styles.footerButton}>
-        <FontAwesome name="home" size={24} color="red" />
+      <TouchableOpacity onPress={handleHomePress} style={[styles.footerButton, route.name === 'HomeScreen' && styles.activeButton]}>
+        <FontAwesome name="home" size={24} color={route.name === 'HomeScreen' ? 'red' : 'black'} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => console.log('Settings icon clicked')} style={styles.footerButton}>
-        <FontAwesome name="user" size={24} color="black" />
+      <TouchableOpacity onPress={handleProfilePress} style={[styles.footerButton, route.name === 'ProfileScreen' && styles.activeButton]}>
+        <FontAwesome name="user" size={24} color={route.name === 'ProfileScreen' ? 'red' : 'black'} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => console.log('Home icon clicked')} style={styles.footerButton}>
         <FontAwesome name="plane" size={24} color="black" />
       </TouchableOpacity>
+      {/* Add other buttons here */}
     </View>
   );
 }
@@ -34,5 +53,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  activeButton: {
+    fontWeight: 'bold',
   },
 });

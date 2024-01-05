@@ -9,11 +9,12 @@ import Footer from '../../components/Footer';
 export default function HomeScreen() {
     return (
         <>
-        <Header></Header>
+            <Header></Header>
+            <ListCategory></ListCategory>
             <ScrollView>
                 <View>
-                
-                    <ListCategory></ListCategory>
+
+
                     <ListProduct></ListProduct>
                 </View>
             </ScrollView>
