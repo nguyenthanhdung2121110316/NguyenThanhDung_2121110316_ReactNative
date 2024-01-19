@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Image } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 
-export default function ListCategory() {
+export default function ListCategory({ onPress }) {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -11,6 +11,10 @@ export default function ListCategory() {
       .catch(error => console.error(error));
   }, []);
 
+  const handleCategoryPress = (category) => {
+    onPress(category);
+  };
+
   return (
     <>
       <View style={styles.catetitle}>
@@ -19,12 +23,12 @@ export default function ListCategory() {
       </View>
       <SafeAreaView style={styles.contain}>
         {categories.map((category, index) => (
-          <View key={index} style={{ alignItems: "center" }}>
+          <TouchableOpacity key={index} style={{ alignItems: "center" }} onPress={() => handleCategoryPress(category)}>
             <View style={styles.item}>
               <Image style={styles.catepic} source={getImageSource(category)} />
             </View>
             <Text>{category}</Text>
-          </View>
+          </TouchableOpacity>
         ))}
       </SafeAreaView>
     </>

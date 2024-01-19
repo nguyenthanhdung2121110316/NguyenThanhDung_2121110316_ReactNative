@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,17 +24,23 @@ const SingleProductScreen = () => {
   }, []);
 
   const handleQuantityChange = (value) => {
-    const newQuantity = Math.max(parseInt(value), 1);
-    setQuantity(newQuantity);
+    if (value === "") {
+      
+      setQuantity(0); 
+    } else if (!isNaN(value)) {
+
+      const newQuantity = Math.max(parseInt(value), 1);
+      setQuantity(newQuantity);
+    }
   };
 
   const handleBuyNow = async () => {
     try {
       const cartItemsData = await AsyncStorage.getItem('cartItems');
       const existingCartItems = cartItemsData ? JSON.parse(cartItemsData) : [];
-  
+
       const existingItemIndex = existingCartItems.findIndex(item => item.id === product.id);
-  
+
       if (existingItemIndex !== -1) {
         // Sản phẩm đã tồn tại trong giỏ hàng, tăng số lượng
         existingCartItems[existingItemIndex].quantity += quantity;
@@ -42,12 +48,12 @@ const SingleProductScreen = () => {
         // Sản phẩm chưa tồn tại trong giỏ hàng, thêm mới
         existingCartItems.push({ id: product.id, title: product.title, price: product.price, image: product.image, quantity });
       }
-  
+
       await AsyncStorage.setItem('cartItems', JSON.stringify(existingCartItems));
-  
-      const updatedCartItemCount = existingCartItems.reduce((total, item) => total + item.quantity, 0); // Tính tổng số lượng sản phẩm
-      updateCartItemCount(updatedCartItemCount); // Cập nhật số lượng sản phẩm trong giỏ hàng trong context
-  
+
+      const updatedCartItemCount = existingCartItems.reduce((total, item) => total + item.quantity, 0); 
+      updateCartItemCount(updatedCartItemCount); 
+
       console.log('Mua hàng:', product.title, 'Số lượng:', quantity);
     } catch (error) {
       console.log('Error saving cart items:', error);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, TextInput, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -6,11 +6,9 @@ import { useNavigation } from '@react-navigation/native';
 import Search from '../screens/home/Search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CartContext } from '../screens/home/CartContext';
-
 export default function Header() {
   const navigation = useNavigation();
   const { cartItemCount, updateCartItemCount } = useContext(CartContext);
-
   useEffect(() => {
     fetchCartItems();
   }, []);
@@ -46,7 +44,7 @@ export default function Header() {
         </TouchableOpacity>
       </View>
 
-      
+
     </SafeAreaView>
   );
 }
@@ -61,7 +59,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 10,
-    paddingBottom:15,
+    paddingBottom: 15,
   },
   searchContainer: {
     flex: 1,

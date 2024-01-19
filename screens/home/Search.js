@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import { SearchContext } from './SearchContext';
 const Search = () => {
+  const { setSearchResults } = useContext(SearchContext);
   const [searchText, setSearchText] = useState('');
 
   const handleSearch = () => {
-    console.log('Performing search for:', searchText);
+    setSearchResults(searchText);
   };
 
   return (

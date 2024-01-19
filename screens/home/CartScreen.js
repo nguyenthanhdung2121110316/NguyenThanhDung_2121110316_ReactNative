@@ -2,10 +2,11 @@ import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CartContext } from './CartContext';
-
+import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 const CartScreen = () => {
   const { updateCartItemCount } = useContext(CartContext);
-
+  const navigation = useNavigation();
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -62,8 +63,18 @@ const CartScreen = () => {
   };
 
   const handleCheckout = () => {
-    // Thực hiện quá trình thanh toán ở đây
-    console.log('Checkout');
+    if (cartItems.length === 0) {
+      Alert.alert('Thông báo', 'Giỏ hàng trống vui lòng thêm sản phẩm');
+      return;
+    }
+  
+    navigation.navigate('Checkout', {
+      cartItems: cartItems,
+      totalPrice: totalPrice,
+      setCartItems: setCartItems,
+      setTotalPrice: setTotalPrice,
+      updateCartItemCount: updateCartItemCount
+    });
   };
 
   return (

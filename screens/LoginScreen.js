@@ -2,17 +2,34 @@ import { StatusBar } from 'expo-status-bar';
 import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, TextInput, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Checkbox } from 'expo-checkbox';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
+import AuthContext from './AuthContext';
 export default function LoginScreen() {
   const [value, setValue] = useState(true);
+  const [email, setEmail] = useState(''); 
+  const [password, setPassword] = useState(''); 
+  const navigation = useNavigation(); 
+  const { login } = useContext(AuthContext);
+
+  const handleLogin = () => {
+    const loginSuccess = login(email, password);
+    if (loginSuccess) {
+      Alert.alert('Login successful');
+      navigation.replace('HomeScreen'); 
+    } else {
+      Alert.alert('Invalid email or password');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.contain}>
       <StatusBar backgroundColor='red'></StatusBar>
       <View style={styles.chualogo}>
-        <Image style={styles.logo} source={require('../images/logo2.jpg')}/>
+        <Image style={styles.logo} source={require('../images/logo2.jpg')} />
       </View>
       <View style={styles.title}>
-        <Text style={{ fontWeight: 'bold', fontSize: 50, }}>Login</Text>
+        <Text style={{ fontWeight: 'bold', fontSize: 50 }}>Login</Text>
         <Text>By signing in you are agreeing</Text>
         <View style={{ flexDirection: 'row' }}>
           <Text>our </Text>
@@ -25,12 +42,20 @@ export default function LoginScreen() {
       <View style={styles.form}>
         <View style={styles.group}>
           <FontAwesome name="envelope" size={30} color="red" style={styles.icon} />
-          <TextInput placeholder='Email Address' style={styles.input}></TextInput>
-
+          <TextInput
+            placeholder='Email Address'
+            style={styles.input}
+            onChangeText={(text) => setEmail(text)} 
+          ></TextInput>
         </View>
         <View style={styles.group}>
           <FontAwesome name="lock" size={40} color="red" style={styles.icon} />
-          <TextInput placeholder='Password' style={styles.input} secureTextEntry={true}></TextInput>
+          <TextInput
+            placeholder='Password'
+            style={styles.input}
+            secureTextEntry={true}
+            onChangeText={(text) => setPassword(text)} 
+          ></TextInput>
         </View>
 
         <View style={styles.group1}>
@@ -44,30 +69,30 @@ export default function LoginScreen() {
           </View>
 
           <View>
-            <TouchableOpacity onPress={() => Alert.alert('hello DungDubai')}>
-              <Text style={{ color: "blue" }}>Forgot Password</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
+              <Text style={{ color: "blue" }}>Đăng ký</Text>
             </TouchableOpacity>
           </View>
 
         </View>
 
-        <TouchableOpacity style={styles.btn}>
-          <Text style={{ color:"#ffffff",fontSize:20, fontWeight:"bold" }}>Login</Text>
+        <TouchableOpacity style={styles.btn} onPress={handleLogin}> 
+          <Text style={{ color: "#ffffff", fontSize: 20, fontWeight: "bold" }}>Login</Text>
         </TouchableOpacity>
       </View>
-      
+
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  chualogo:{
+  chualogo: {
     alignItems: "center",
   },
-  logo:{
+  logo: {
     marginTop: 80,
-    width:150,
-    height:150,
+    width: 150,
+    height: 150,
   },
   contain: {
     flex: 1,
@@ -98,16 +123,16 @@ const styles = StyleSheet.create({
   },
   group1: {
     marginTop: 20,
-    flexDirection:"row",
+    flexDirection: "row",
     justifyContent: "space-between",
-    alignItems:"center",
+    alignItems: "center",
   },
-  btn:{
-    marginTop:30,
-    backgroundColor:"red",
-    paddingVertical:15,
-    alignItems:"center",
-    borderRadius:10,
+  btn: {
+    marginTop: 30,
+    backgroundColor: "red",
+    paddingVertical: 15,
+    alignItems: "center",
+    borderRadius: 10,
   },
 
 });
