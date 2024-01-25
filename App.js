@@ -12,7 +12,7 @@ import AuthContext from './screens/AuthContext';
 import { CartProvider } from './screens/home/CartContext';
 import { SearchProvider } from './screens/home/SearchContext';
 import Checkout from './screens/home/Checkout';
-
+import MapScreen from './screens/home/MapScreen';
 const Stack = createStackNavigator();
 
 export default function App() {
@@ -63,6 +63,11 @@ export default function App() {
                   name='Checkout'
                   component={Checkout}
                   options={{ headerTitle: 'Thanh toán' }}
+                />
+                <Stack.Screen
+                  name='MapScreen'
+                  component={MapScreen}
+                  options={{ headerTitle: 'Map' }}
                 />
                 <Stack.Screen
                   name="ProfileScreen"

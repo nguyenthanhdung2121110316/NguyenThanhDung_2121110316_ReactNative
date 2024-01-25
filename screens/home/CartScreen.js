@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CartContext } from './CartContext';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
 const CartScreen = () => {
   const { updateCartItemCount } = useContext(CartContext);
   const navigation = useNavigation();
@@ -53,6 +54,39 @@ const CartScreen = () => {
     }
   };
 
+  const handleIncreaseQuantity = async (itemId) => {
+    try {
+      const updatedCartItems = cartItems.map(item => {
+        if (item.id === itemId) {
+          item.quantity += 1;
+        }
+        return item;
+      });
+
+      setCartItems(updatedCartItems);
+      await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+
+      updateCartItemCount(getCartItemCount(updatedCartItems));
+
+    } catch (error) {
+      console.log('Error increasing item quantity:', error);
+    }
+  };
+
+  const handleDeleteItem = async (itemId) => {
+    try {
+      const updatedCartItems = cartItems.filter(item => item.id !== itemId);
+
+      setCartItems(updatedCartItems);
+      await AsyncStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+
+      updateCartItemCount(getCartItemCount(updatedCartItems));
+
+    } catch (error) {
+      console.log('Error deleting item from cart:', error);
+    }
+  };
+
   const calculateTotalPrice = () => {
     const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
     setTotalPrice(totalPrice);
@@ -67,7 +101,7 @@ const CartScreen = () => {
       Alert.alert('Thông báo', 'Giỏ hàng trống vui lòng thêm sản phẩm');
       return;
     }
-  
+
     navigation.navigate('Checkout', {
       cartItems: cartItems,
       totalPrice: totalPrice,
@@ -87,11 +121,26 @@ const CartScreen = () => {
             <View style={styles.cartItem}>
               <Image source={{ uri: item.image }} style={styles.cartItemImage} />
               <View style={styles.cartItemInfo}>
-                <Text style={styles.cartItemTitle}>{item.title} ({item.quantity})</Text>
+                <Text style={styles.cartItemTitle}>{item.title}</Text>
+                <View style={styles.cartItemQuantityContainer}>
+                  <TouchableOpacity onPress={() => handleRemoveItem(item.id)}>
+                    <View style={styles.quantityButton}>
+                      <Text style={styles.quantityButtonText}>-</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <View style={styles.cartItemQuantityContainer}>
+                    <Text style={styles.cartItemQuantityText}>{item.quantity}</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => handleIncreaseQuantity(item.id)}>
+                    <View style={styles.quantityButton}>
+                      <Text style={styles.quantityButtonText}>+</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
                 <Text style={styles.cartItemPrice}>Price: ${item.price.toFixed(2)}</Text>
               </View>
-              <TouchableOpacity onPress={() => handleRemoveItem(item.id)}>
-                <Text style={styles.removeItemButton}>Remove</Text>
+              <TouchableOpacity onPress={() => handleDeleteItem(item.id)}>
+                <Text style={styles.cartItemButton}>X</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -133,23 +182,49 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  cartItemQuantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cartItemQuantityText: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: 'white',
+    borderRadius: 5,
+    fontWeight: 'bold',
+    fontSize: 14,
+    color: 'black',
+  },
   cartItemPrice: {
     fontSize: 14,
   },
-  removeItemButton: {
+  cartItemButton: {
     fontSize: 14,
-    color: 'red',
-    marginTop: 8,
+    color: 'black',
   },
   emptyCartText: {
     fontSize: 16,
-    fontStyle: 'italic',
+    textAlign: 'center',
+    marginTop: 20,
   },
   totalPrice: {
     fontSize: 18,
     fontWeight: 'bold',
     marginTop: 16,
-    textAlign: 'center',
+    marginBottom: 8,
+  },
+  quantityButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 5,
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
   },
 });
 

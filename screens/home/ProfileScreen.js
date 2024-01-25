@@ -1,13 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-
+import { View, Text, StyleSheet, Image, Button } from 'react-native';
+import { AuthContext } from '../AuthContext';
+import { useNavigation } from '@react-navigation/native';
 export default function ProfileScreen() {
-  const avatarImage = require('../../assets/favicon.png'); // Đường dẫn tới hình ảnh đại diện
+  const navigation = useNavigation();
+  const avatarImage = require('../../assets/favicon.png');
 
   const userProfile = {
     fullName: 'Nguyễn Thành Dũng',
     dateOfBirth: '01/01/1990',
     address: '123 Đường ABC, Quận XYZ, Thành phố HCM',
+  };
+
+  const handleLogout = () => {
+    navigation.navigate('LoginScreen');
   };
 
   return (
@@ -19,6 +25,7 @@ export default function ProfileScreen() {
       <Text style={styles.text}>{userProfile.dateOfBirth}</Text>
       <Text style={styles.label}>Địa chỉ:</Text>
       <Text style={styles.text}>{userProfile.address}</Text>
+      <Button title="Đăng xuất" onPress={handleLogout} />
     </View>
   );
 }

@@ -1,38 +1,83 @@
-import React, { useEffect, useState, useContext} from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, Button, Image } from 'react-native';
 import { CartContext } from './CartContext';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
+import * as Location from 'expo-location';
 
-const Checkout = ({ navigation: propNavigation, route }) => {
+
+const Checkout = ({ route }) => {
     const { updateCartItemCount } = useContext(CartContext);
     const [customerName, setCustomerName] = useState('');
     const [customerEmail, setCustomerEmail] = useState('');
     const [customerAddress, setCustomerAddress] = useState('');
     const { cartItems, totalPrice, setCartItems, setTotalPrice } = route.params;
     const navigation = useNavigation();
-    useEffect(() => {
-        console.log('Cart Items:', cartItems);
-        console.log('Total Price:', totalPrice);
-    }, [cartItems, totalPrice]);
+
+    useEffect(() => { }, [cartItems, totalPrice]);
 
     const handlePayment = () => {
-        clearCart();
-        console.log('Payment');
-        Alert.alert('Thông báo', 'Thanh toán thành công');
-        navigation.replace('HomeScreen');
-      };
+        if (!customerName || !customerEmail || !customerAddress) {
+            Alert.alert('Thông báo', 'Vui lòng nhập đủ thông tin');
+        } else {
+            clearCart();
+            console.log('Payment');
+            Alert.alert('Thông báo', 'Thanh toán thành công');
+            navigation.replace('HomeScreen');
+        }
+    };
 
     const clearCart = async () => {
         try {
             setCartItems([]);
             setTotalPrice(0);
             await AsyncStorage.removeItem('cartItems');
-            updateCartItemCount(0); 
-          } catch (error) {
+            updateCartItemCount(0);
+        } catch (error) {
             console.log('Error clearing cart:', error);
+        }
+    };
+
+    const getCurrentLocation = async () => {
+        try {
+          const { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            console.log('Permission to access location was denied');
+            return;
           }
+      
+          navigation.navigate('MapScreen', { handleAddressSelection: handleAddressSelection });
+        } catch (error) {
+          console.log('Error getting current location:', error);
+        }
+      };
+      
+      const handleAddressSelection = async (latitude, longitude) => {
+        try {
+          const selectedAddress = await fetchAddressFromCoordinates(latitude, longitude);
+          setCustomerAddress(selectedAddress);
+        } catch (error) {
+          console.log('Error fetching address from coordinates:', error);
+        }
+      };
+      
+      const fetchAddressFromCoordinates = async (latitude, longitude) => {
+        try {
+            const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`;
+    
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+    
+            if (data && data.address) {
+                const addressComponents = Object.values(data.address);
+                const address = addressComponents.join(', ');
+    
+                return address;
+            }
+        } catch (error) {
+            console.log('Error fetching address from coordinates:', error);
+        }
     };
 
     return (
@@ -51,12 +96,21 @@ const Checkout = ({ navigation: propNavigation, route }) => {
                     value={customerEmail}
                     onChangeText={text => setCustomerEmail(text)}
                 />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Address"
-                    value={customerAddress}
-                    onChangeText={text => setCustomerAddress(text)}
-                />
+                <View style={styles.addressContainer}>
+                    <TextInput
+                        style={styles.addressInput}
+                        placeholder="Address"
+                        multiline
+                        numberOfLines={2}
+                        value={customerAddress}
+                        onChangeText={text => setCustomerAddress(text)}
+                    />
+                    <Button
+                        style={styles.locationButton}
+                        title="Sử dụng vị trí"
+                        onPress={getCurrentLocation}
+                    />
+                </View>
             </View>
             <ScrollView style={styles.cartItemsContainer}>
                 {cartItems.map(item => (
@@ -97,6 +151,26 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         paddingHorizontal: 8,
     },
+    addressContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    addressInput: {
+        flex: 1,
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginRight: 8,
+        paddingHorizontal: 8,
+    },
+    locationButton: {
+        borderRadius: 20,
+        backgroundColor: 'blue',
+        color: 'white',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+    },
     cartItemsContainer: {
         maxHeight: 200,
         marginBottom: 16,
@@ -107,7 +181,6 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         borderRadius: 8,
         flexDirection: 'row',
-        
     },
     cartItemTitle: {
         fontSize: 16,
@@ -128,10 +201,10 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         marginRight: 8,
-      },
-      cartItemInfo: {
+    },
+    cartItemInfo: {
         flex: 1,
-      },
+    },
 });
 
 export default Checkout;

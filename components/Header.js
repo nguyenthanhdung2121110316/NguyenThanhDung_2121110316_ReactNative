@@ -18,7 +18,8 @@ export default function Header() {
       const cartItemsData = await AsyncStorage.getItem('cartItems');
       if (cartItemsData) {
         const parsedCartItems = JSON.parse(cartItemsData);
-        updateCartItemCount(parsedCartItems.length);
+        const totalCount = parsedCartItems.reduce((total, item) => total + item.quantity, 0);
+        updateCartItemCount(totalCount);
       }
     } catch (error) {
       console.error(error);
